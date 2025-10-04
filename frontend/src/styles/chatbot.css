@@ -1,0 +1,289 @@
+/* 🖥️ Webcam container */
+.floating-cam {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 180px;
+  height: 135px;
+  z-index: 9999;
+  border-radius: 10px;
+  background-color: black;
+  overflow: hidden;
+  padding: 4px;
+  cursor: grab;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.4);
+  /* default glow */
+}
+
+.calibration-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(20, 20, 20, 0.8);
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.calibration-box {
+  text-align: center;
+  padding: 30px;
+  background: #111;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.calibration-box .loader {
+  border: 5px solid #333;
+  border-top: 5px solid #09f;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 20px auto;
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.floating-cam.dragging {
+  opacity: 0.8;
+  cursor: grabbing !important;
+}
+
+/* ✂️ Minimize Button */
+.minimize-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #38bdf8;
+  color: black;
+  border: none;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: bold;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+/* 🎥 Chatbot Icon (video clip) */
+.chatbot-icon {
+  position: fixed;
+  bottom: 400px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 100px;
+  z-index: 10001;
+  cursor: pointer;
+  border: 3px solid #38bdf8;
+}
+
+/* 💬 Chatbot box container */
+.chatbox-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 370px;
+  /* 5 inch */
+  height: 470px;
+  /* 4 inch */
+  background-color: #0f172a;
+  color: white;
+  border: 2px solid #38bdf8;
+  border-radius: 12px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+/* 🔵 Header of Chatbox */
+.chatbox-header {
+  display: flex;
+  height: 74px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background-color: #1e293b;
+  border-bottom: 1px solid #334155;
+}
+
+.chatbox-header h3 {
+  flex: 2;
+  font-size: 18px;
+  margin: 0;
+  color: #38bdf8;
+}
+
+/* ❌ Close button */
+.chatbox-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #f87171;
+  cursor: pointer;
+}
+
+/* 💬 Message thread */
+.chatbox-messages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.message {
+  padding: 8px 12px;
+  border-radius: 8px;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
+.message.bot {
+  background-color: #1e3a8a;
+  align-self: flex-start;
+}
+
+.message.user {
+  background-color: #22c55e;
+  align-self: flex-end;
+  color: #000;
+}
+
+/* 🧠 Chat input section */
+.chatbox-input {
+  display: flex;
+  border-top: 1px solid #334155;
+  padding: 8px;
+  background-color: #1e293b;
+}
+
+.chatbox-input input {
+  flex: 1;
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-right: 8px;
+}
+
+.chatbox-input button {
+  background: #38bdf8;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #000;
+}
+
+/* Canvas glow */
+#webcam-container canvas {
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+#webcam-container canvas.border-red {
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+}
+
+.chatbot-icon-inline {
+  width: 50px;
+  height: 48px;
+  margin-right: 10px;
+  border-radius: 50%;
+  border: 2px solid #38bdf8;
+}
+
+/* ⌨️ Typing animation effect */
+.typing-text {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid #38bdf8;
+  animation: typing 2.5s steps(30, end), blink-caret 0.75s step-end infinite;
+  font-size: 14px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #38bdf8;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink-caret {
+
+  from,
+  to {
+    border-color: transparent;
+  }
+
+  50% {
+    border-color: #38bdf8;
+  }
+}
+
+.webcam-loader-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  color: #0ff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  z-index: 2;
+}
+
+.webcam-loader {
+  border: 3px solid #0ff;
+  border-top: 3px solid transparent;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 8px;
+}
+
+.typing-text {
+  text-align: center;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

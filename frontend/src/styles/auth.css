@@ -1,0 +1,128 @@
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1rem; 
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0f23, #1a1a2e);
+    color: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.auth-title {
+    font-size: 3rem;
+    margin-top: -9rem;
+    margin-bottom: 7rem;
+    color: #ffffff;
+    text-align: center;
+}
+
+.anan
+{
+    margin-top: -0.5rem;
+    text-align: center;
+}
+
+.auth-highlight {
+    color: #00f9ff;
+}
+
+.auth-card {
+    background: #1f1f3f;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    padding: 2rem;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.08);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.auth-form input {
+    padding: 0.75rem;
+    background-color: #262640;
+    border: 1px solid rgba(0, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+.auth-btn {
+    background-color: #00f9ff;
+    color: #0f0f23;
+    font-weight: bold;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.auth-btn:hover {
+    background-color: #00c8d6;
+}
+
+.auth-message {
+    text-align: center;
+    margin-top: 1rem;
+    color: #ffc107;
+    font-size: 0.95rem;
+}
+
+/* === Slider === */
+.auth-slider {
+    margin-bottom: 1.5rem;
+}
+
+.slider-track {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    background: #12122a;
+    border: 1px solid rgba(0, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 0.25rem;
+    overflow: hidden;
+}
+
+.slider-track button {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: #ffffff;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.slider-track button.active {
+    color: #0f0f23;
+}
+
+.slider-thumb {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    background-color: #00f9ff;
+    border-radius: 8px;
+    z-index: 0;
+    transition: transform 0.3s ease;
+}
+
+.slider-thumb.left {
+    transform: translateX(0%);
+}
+
+.slider-thumb.right {
+    transform: translateX(100%);
+}

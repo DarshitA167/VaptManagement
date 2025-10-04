@@ -1,0 +1,267 @@
+/* 🌌 HOME CONTAINER */
+.home-container {
+    min-height: 100vh;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #0f0f23, #1a1a2e);
+    color: white;
+    text-align: center;
+    width: 100%;
+    overflow-x: hidden;
+    margin-left: -25px;
+    /* 🚫 No more right white gap */
+}
+
+/* 🌟 TITLE */
+.dashboard-title {
+    font-size: clamp(2.4rem, 5vw, 5rem);
+    margin-bottom: 0.5rem;
+}
+
+.highlight {
+    color: #00f7ff;
+    text-shadow: 0 0 10px #00f7ff;
+}
+
+.dashboard-subtitle {
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    color: #cccccc;
+    margin-bottom: 3rem;
+}
+
+/* 💠 TILE GRID */
+.tile-grid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    position: relative;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+/* 🧩 TILE BASE STYLE */
+.tile {
+    width: 325px;
+    height: 440px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
+    color: white;
+    text-decoration: none;
+    margin-left: -120px;
+    /* For desktop overlap */
+    margin-bottom: 100px;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.05);
+    position: relative;
+    z-index: 1;
+}
+
+/* 🌈 STACKING */
+.tile-3 {
+    z-index: 6;
+    margin-top: 200px;
+}
+
+.tile-2,
+.tile-4 {
+    z-index: 4;
+    margin-top: 100px;
+    height: 400px;
+    width: 300px;
+}
+
+.tile-1,
+.tile-5 {
+    z-index: 2;
+    margin-top: 0px;
+    height: 350px;
+    width: 280px;
+}
+
+/* ⚡ HOVER */
+.tile:hover {
+    transform: scale(1.05);
+    z-index: 10;
+    border-color: #00f7ff;
+    box-shadow: 0 0 20px #00f7ff;
+    background: rgba(0, 255, 255, 0.1);
+}
+
+.tile:first-child {
+    margin-left: 0;
+}
+
+/* 🎯 ICON */
+.tile-icon {
+    width: 147px;
+    height: 147px;
+    margin-bottom: 1rem;
+    border-radius: 16px;
+    background: rgba(0, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    color: #00f7ff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    transition: transform 0.2s ease;
+}
+
+.tile:hover .tile-icon {
+    transform: scale(1.15);
+}
+
+/* ✍️ TEXT */
+.tile h3 {
+    font-size: 1rem;
+    font-weight: 1000;
+    color: #00f7ff;
+    margin-bottom: 0.3rem;
+}
+
+.tile p {
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+    padding: 0 12px;
+    line-height: 1.3;
+    text-align: center;
+    max-width: 85%;
+}
+
+/* 🧑‍💻 AUTHOR SECTION */
+.author-section {
+    margin-top: 7rem;
+    font-size: 0.95rem;
+    color: #aaa;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 2rem;
+}
+
+.author-name {
+    color: #00f7ff;
+    font-weight: bold;
+}
+
+/* 🌍 RESPONSIVE ZONES */
+
+/* Tablet (≤1200px) */
+@media (max-width: 1200px) {
+    .tile-grid {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    .tile {
+        margin: 0;
+        width: 300px;
+        height: 350px;
+        z-index: 1;
+    }
+}
+
+/* Mobile (≤768px) */
+@media (max-width: 768px) {
+    .tile-grid {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        width: 100%;
+        overflow: visible;
+    }
+
+    .tile {
+        margin: 0 auto;
+        width: 90%;
+        max-width: 360px;
+        height: auto;
+        padding: 2rem 1rem;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .tile-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+
+    .tile h3 {
+        font-size: 1rem;
+    }
+
+    .tile p {
+        font-size: 0.8rem;
+    }
+
+    .dashboard-title {
+        font-size: 2.2rem;
+    }
+
+    .dashboard-subtitle {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .author-section {
+        font-size: 0.8rem;
+        padding-top: 1.5rem;
+    }
+}
+
+/* Mini phones (≤400px) */
+@media (max-width: 400px) {
+    .tile {
+        width: 95%;
+        padding: 1.5rem 1rem;
+    }
+
+    .tile-icon {
+        width: 65px;
+        height: 65px;
+        font-size: 1.6rem;
+    }
+
+    .tile h3 {
+        font-size: 0.9rem;
+    }
+
+    .tile p {
+        font-size: 0.75rem;
+    }
+}
+
+.hasehase
+{
+    width: 67px;
+    height: 67px;
+    margin-bottom: 1rem;
+    border-radius: 16px;
+    background: rgba(0, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #00f7ff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    transition: transform 0.2s ease;
+    font-size: 3rem;
+    margin-left: 8.3cm;
+    margin-top: 1cm;
+}
+

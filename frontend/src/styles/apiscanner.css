@@ -1,0 +1,133 @@
+.apiscanner-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    font-family: "Inter", sans-serif;
+}
+
+.apiscanner-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.apiscanner-form input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #102032;
+    background: #071226;
+    color: #e6eef6;
+    margin-bottom: 12px;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.buttons button {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #38bdf8;
+    color: #04202a;
+    font-weight: 600;
+}
+
+.info {
+    color: #fef3c7;
+    margin: 10px 0;
+}
+
+.error {
+    color: #fb7185;
+    margin: 10px 0;
+}
+
+.progress-area {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress-line {
+    flex: 1;
+    height: 14px;
+    background: #102032;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.progress-line-fill {
+    height: 100%;
+    background: #38bdf8;
+    width: 0%;
+    transition: width .6s ease;
+}
+
+.progress-percent {
+    min-width: 40px;
+    text-align: right;
+}
+
+.progress-details {
+    margin-top: 12px;
+    color: #cbd5e1;
+}
+
+.results-wrapper {
+    margin-top: 20px;
+}
+
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #0a1428;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.results-table th,
+.results-table td {
+    padding: 10px;
+    border-bottom: 1px solid #1e293b;
+    text-align: left;
+    vertical-align: top;
+}
+
+.results-table th {
+    background: #0d1b2a;
+    color: #38bdf8;
+    font-weight: 700;
+}
+
+.results-table tr:nth-child(even) {
+    background: #091727;
+}
+
+.results-table .wrap {
+    max-width: 300px;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.priority.high {
+    color: #ff4d4d;
+    font-weight: 700;
+}
+
+.priority.medium {
+    color: #ffb347;
+    font-weight: 700;
+}
+
+.priority.low {
+    color: #9ae6b4;
+    font-weight: 700;
+}

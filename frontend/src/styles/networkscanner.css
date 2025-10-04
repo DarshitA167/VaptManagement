@@ -1,0 +1,247 @@
+/* frontend/src/styles/webappscanner.css */
+
+/* Web App Scanner Container */
+.webapp-container,
+.apiscanner-container,
+.networkscanner-container,
+.scanner-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    font-family: "Inter", sans-serif;
+}
+
+/* Headings */
+.scanner-container h2,
+.scanner-container h1 {
+    text-align: center;
+    color: #38bdf8;
+    font-size: 2.2rem;
+    margin-bottom: 20px;
+}
+
+/* Form rows */
+.form-row,
+.apiscanner-form,
+.scanner-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.scanner-form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.scanner-form input,
+.form-row input,
+.form-row select,
+.apiscanner-form input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #102032;
+    background: #071226;
+    color: #e6eef6;
+    outline: none;
+    width: 100%;
+}
+
+/* Buttons */
+.form-row button,
+.scanner-form button,
+.apiscanner-form button,
+.buttons button {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #38bdf8;
+    color: #04202a;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.scanner-form button {
+    font-weight: bold;
+    padding: 12px 20px;
+    background: #1db9ff;
+}
+
+.scanner-form button:hover,
+.buttons button:hover {
+    background: #0ea5e9;
+}
+
+.download-btn {
+    background: #22c55e !important;
+}
+
+.download-btn:hover {
+    background: #16a34a !important;
+}
+
+/* Labels */
+.apiscanner-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+/* Info/Error/Success */
+.error,
+.error-message {
+    color: #fb7185;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.success {
+    color: #22c55e;
+    margin-top: 12px;
+}
+
+.info {
+    color: #fef3c7;
+    margin: 10px 0;
+}
+
+/* Progress bars */
+.progress-section,
+.progress-area {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.progress-bar-container label {
+    width: 120px;
+    font-weight: 600;
+}
+
+.progress-bar,
+.progress-line {
+    flex: 1;
+    background-color: #102032;
+    border-radius: 10px;
+    height: 18px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar-fill,
+.progress-line-fill {
+    background-color: #38bdf8;
+    height: 100%;
+    width: 0%;
+    transition: width 0.6s ease-in-out;
+}
+
+.progress-percent {
+    min-width: 40px;
+    text-align: right;
+}
+
+.progress-details {
+    margin-top: 12px;
+    color: #cbd5e1;
+}
+
+/* Results table */
+.results-wrapper,
+.results-table {
+    margin-top: 20px;
+    max-width: 100%;
+    overflow-x: auto;
+    background: #0a1428;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.results-table table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    table-layout: auto;
+}
+
+.results-table th,
+.results-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #1e293b;
+    word-wrap: break-word;
+    white-space: normal;
+    text-align: left;
+    vertical-align: top;
+}
+
+.results-table th {
+    background: #0d1b2a;
+    color: #38bdf8;
+    font-weight: 600;
+}
+
+.results-table tr:nth-child(even) {
+    background: #091727;
+}
+
+.results-table tr:hover {
+    background: #1e3a5f;
+}
+
+.results-table .wrap {
+    max-width: 300px;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Priority colors */
+.priority.high {
+    color: #ff4d4d;
+    font-weight: 700;
+}
+
+.priority.medium {
+    color: #ffb347;
+    font-weight: 700;
+}
+
+.priority.low {
+    color: #9ae6b4;
+    font-weight: 700;
+}
+
+/* Scanner result box */
+.result {
+    background: #112240;
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: left;
+    color: #fff;
+    overflow-x: auto;
+}
+
+/* Status indicators */
+.status-open {
+    color: #22c55e;
+    font-weight: bold;
+}
+
+.status-closed {
+    color: #f87171;
+}

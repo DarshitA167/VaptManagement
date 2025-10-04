@@ -1,1 +1,9 @@
 test content
+
+/Applications/ZAP.app/Contents/MacOS/ZAP.sh -daemon -port 8090 -config api.key=changeme
+(venv) darshitayar@Darshits-MacBook-Pro VaptManagement % ps aux | grep ZAP
+
+darshitayar      56612   2.7  2.9 415233808 243792 s003  S+   12:34PM   0:11.23 java -Xmx2048m -Xdock:icon=../Resources/ZAP.icns -jar /Applications/ZAP.app/Contents/Java/zap-2.16.1.jar -daemon -port 8090 -host 127.0.0.1 -config api.key=changeme -config spider.threadCount=8 -config spider.maxDepth=3 -config pscan.maxAlerts=5000
+darshitayar      58013   0.0  0.0 410200080   1216 s012  S+   12:37PM   0:00.00 grep ZAP
+
+(venv) darshitayar@Darshits-MacBook-Pro VaptManagement % kill -9 56612    

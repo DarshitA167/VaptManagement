@@ -1,0 +1,67 @@
+/* src/styles/flappy.css */
+
+.game-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 18, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 18px;
+}
+
+.game-modal-box {
+    width: min(560px, 96%);
+    max-height: 92%;
+    overflow: auto;
+    background: linear-gradient(180deg, #071226 0%, #0b1730 100%);
+    border-radius: 12px;
+    padding: 18px;
+    color: #e6eef6;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(56, 189, 248, 0.08);
+}
+
+.game-modal-box h3 {
+    margin: 0 0 6px 0;
+    color: #38bdf8;
+}
+
+.game-modal-box p {
+    margin: 0 0 12px 0;
+    color: #cfeff9;
+}
+
+.game-modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.game-modal-actions button {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.game-modal-actions button:first-child {
+    background: #38bdf8;
+    color: #04202a;
+}
+
+.game-modal-actions button:last-child {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e6eef6;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.game-close-btn {
+    background: transparent;
+    border: none;
+    color: #e6eef6;
+    cursor: pointer;
+    font-size: 18px;
+}

@@ -1,0 +1,19 @@
+# Ignore env secrets
+.env
+
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore DB and migrations (optional if versioning them)
+db.sqlite3
+*.sqlite3
+*.log
+
+# Ignore compiled files
+*.so
+
+# VSCode and macOS clutter
+.vscode/
+.DS_Store
