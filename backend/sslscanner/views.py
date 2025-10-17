@@ -287,12 +287,6 @@ def _generate_vulns(parsed_cert, supported_tls_versions, domain):
 
     return vulns
 
-import io
-import base64
-import ssl
-import socket
-import traceback
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib.pagesizes import letter
@@ -425,9 +419,11 @@ def scan_ssl(request):
         ]
 
         # --- Generate PDF ---
+        # --- Generate PDF ---
         pdf_buffer = _generate_pdf(domain, parsed, tls_version, supported_versions, vulns)
         pdf_base64 = base64.b64encode(pdf_buffer.getvalue()).decode("utf-8")
 
+        # --- Full readable result ---
         readable_result = {
             "domain": domain,
             "issuer": parsed.get("issuer"),
@@ -440,8 +436,38 @@ def scan_ssl(request):
             "vulnerabilities": vulns
         }
 
+        # --- Save history ---
+        save_scan_history(domain, "success", readable_result, pdf_base64)
+
+        # Return response with PDF for immediate download
         return Response({"result": readable_result, "pdf_base64": pdf_base64})
+
 
     except Exception as exc:
         traceback.print_exc()
         return Response({"error": f"Unexpected error: {exc}"}, status=500)
+
+
+from .models import SSLScan
+from .serializers import SSLScanSerializer
+
+# 🧠 After your scan function successfully completes
+def save_scan_history(domain, status, result_dict, pdf_base64):
+    SSLScan.objects.create(
+        domain=domain,
+        status=status,
+        expiry_date=result_dict.get("valid_to"),
+        issuer=result_dict.get("issuer"),
+        tls_version=result_dict.get("tls_version"),
+        pdf_report=pdf_base64,          # store PDF as base64
+        result_json=result_dict          # store full result
+    )
+
+
+
+# 🔍 API to get past scans
+@api_view(["GET"])
+def get_scan_history(request):
+    scans = SSLScan.objects.all().order_by("-scan_date")[:20]  # last 20 scans
+    serializer = SSLScanSerializer(scans, many=True)
+    return Response(serializer.data)

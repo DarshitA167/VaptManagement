@@ -321,9 +321,45 @@ def download_pdf_report(request, scan_id):
         canvas.setFont("Helvetica", 9)
         canvas.setFillColor(colors.black)  # ensure footer text is visible
         canvas.drawCentredString(doc.pagesize[0]/2, 20, footer_text)
+
+        # --- Draw small 3mm x 3mm color blocks legend above footer (bottom-right corner) ---
+        block_size = 8  # ~3mm in points
+        padding = 5
+        start_x = doc.pagesize[0] - 140  # 140pts from left
+        start_y = 40  # above footer
+
+        canvas.setFillColor(colors.HexColor("#fb948b"))
+        canvas.rect(start_x, start_y, block_size, block_size, fill=1, stroke=0)
+        canvas.setFillColor(colors.black)
+        canvas.setFont("Helvetica", 7)
+        canvas.drawString(start_x + block_size + 2, start_y, "High Risk")
+
+        canvas.setFillColor(colors.HexColor("#f9e6a8"))
+        canvas.rect(start_x, start_y + block_size + 2, block_size, block_size, fill=1, stroke=0)
+        canvas.setFillColor(colors.black)
+        canvas.drawString(start_x + block_size + 2, start_y + block_size + 2, "Medium Risk")
+
+        canvas.setFillColor(colors.HexColor("#dff6c5"))
+        canvas.rect(start_x, start_y + 2*(block_size + 2), block_size, block_size, fill=1, stroke=0)
+        canvas.setFillColor(colors.black)
+        canvas.drawString(start_x + block_size + 2, start_y + 2*(block_size + 2), "Low Risk")
+
+
+
         canvas.restoreState()
 
 
     doc.build(elements, onFirstPage=add_page, onLaterPages=add_page)
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename=f"api_scan_report_{scan_id}.pdf")
+
+
+@api_view(["GET"])
+def past_scans(request):
+    """
+    Returns list of past API scans that completed successfully, latest first.
+    Failed or running scans are excluded.
+    """
+    scans = APIScan.objects.filter(status="finished").order_by('-created_at')
+    serializer = APIScanSerializer(scans, many=True)
+    return Response(serializer.data)

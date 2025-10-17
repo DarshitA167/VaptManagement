@@ -1,194 +1,198 @@
 from rest_framework.decorators import api_view
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
-from django.http import FileResponse, JsonResponse
-import subprocess, xmltodict, io, datetime
+from django.views.decorators.csrf import csrf_exempt
+from django.http import FileResponse
+from datetime import datetime
+import subprocess, xmltodict, io
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from .models import NetworkScan
+from .serializers import NetworkScanSerializer
 
-RESULT_FIELDS = ("host", "port", "status", "service", "vulnerable", "cve", "date")
-
-# global cache (instead of session)
-LATEST_RESULTS = []
-
+# ---- Network Scan ----
 @csrf_exempt
 @api_view(["POST"])
 def scan_network(request):
-    target = request.data.get("ip") or "127.0.0.1"
+    ip = request.data.get("ip") or "127.0.0.1"
     ports = request.data.get("ports") or "1-1024"
 
-    def norm(value):
-        if value is None:
-            return "-"
-        s = str(value).strip()
-        return "-" if s in ("", "n/a", "unknown") else s
+    def norm(val, is_bool=False):
+        if is_bool: return bool(val)
+        if val is None: return "-"
+        s = str(val).strip()
+        return "-" if s == "" or s.lower() in ("n/a", "unknown") else s
+
+    # Calculate timeout
+    port_count = 1
+    if "-" in str(ports):
+        try:
+            start, end = map(int, ports.split("-"))
+            port_count = max(1, end - start + 1)
+        except: pass
+    timeout_val = 60 + int(port_count / 500) * 30
+
+    nmap_args = ["nmap", "-T4", "--min-rate", "500", "-p", ports, "-oX", "-", ip]
 
     try:
-        result = subprocess.run(
-            ["nmap", "-p", ports, "-oX", "-", target],
-            capture_output=True,
-            text=True,
-            timeout=120
-        )
+        result = subprocess.run(nmap_args, capture_output=True, text=True, timeout=timeout_val)
         if result.returncode != 0 or not result.stdout.strip():
             return Response({"error": f"Nmap failed: {result.stderr}"}, status=500)
 
         xml_output = xmltodict.parse(result.stdout)
         hosts = xml_output.get("nmaprun", {}).get("host")
-        if not hosts:
-            return Response({"results": []})
+        if isinstance(hosts, dict): hosts = [hosts]
+        scan_results = []
 
-        if isinstance(hosts, dict):
-            hosts = [hosts]
+        if hosts:
+            for host in hosts:
+                host_addr = norm(host.get("address", {}).get("@addr"))
+                ports_node = host.get("ports", {}).get("port", [])
+                if isinstance(ports_node, dict): ports_node = [ports_node]
+                if not ports_node:
+                    scan_results.append({
+                        "host": host_addr, "port": "-", "status": "-", "service": "-", "vulnerable": False, "cve": "-"
+                    })
+                    continue
+                for port in ports_node:
+                    scan_results.append({
+                        "host": host_addr,
+                        "port": norm(port.get("@portid")),
+                        "status": norm(port.get("state", {}).get("@state")),
+                        "service": norm(port.get("service", {}).get("@name")),
+                        "vulnerable": False,
+                        "cve": "-"
+                    })
 
-        all_results = []
-        for host in hosts:
-            host_addr = "-"
-            if "address" in host:
-                if isinstance(host["address"], list):
-                    host_addr = host["address"][0].get("@addr", "-")
-                else:
-                    host_addr = host["address"].get("@addr", "-")
+        # Save history in session for immediate frontend display
+        history = request.session.get("scan_history", [])
+        new_entry = {
+            "ip": ip, "ports": ports,
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "results": scan_results
+        }
+        history.append(new_entry)
+        request.session["scan_history"] = history[-20:]
+        request.session["scan_results"] = scan_results
 
-            ports_node = host.get("ports", {}).get("port", [])
-            if isinstance(ports_node, dict):
-                ports_node = [ports_node]
+        # Save in DB
+        new_scan = NetworkScan.objects.create(ip=ip, ports=ports, results=scan_results, status="finished")
 
-            if not ports_node:
-                all_results.append({
-                    "host": host_addr,
-                    "port": "-",
-                    "status": "-",
-                    "service": "-",
-                    "vulnerable": False,
-                    "cve": "-",
-                    "date": str(datetime.date.today())
-                })
-                continue
+        return Response({
+    "results": scan_results,
+    "history": history[-20:],
+    "scan_id": new_scan.id  # <-- Add this line
+})
 
-            for port in ports_node:
-                all_results.append({
-                    "host": host_addr,
-                    "port": norm(port.get("@portid")),
-                    "status": norm(port.get("state", {}).get("@state")),
-                    "service": norm(port.get("service", {}).get("@name")),
-                    "vulnerable": False,
-                    "cve": "-",
-                    "date": str(datetime.date.today())
-                })
 
-        global LATEST_RESULTS
-        LATEST_RESULTS = all_results
-        return Response({"results": all_results})
 
     except subprocess.TimeoutExpired:
-        return Response({"error": "Nmap timed out"}, status=500)
+        return Response({"error": f"Nmap timed out after {timeout_val}s"}, status=500)
     except Exception as e:
         return Response({"error": str(e)}, status=500)
 
+
+
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from django.http import FileResponse
-import io, datetime
+import io
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
-from .views import LATEST_RESULTS  # make sure this imports the global results from your scan_network view
-
+from .models import NetworkScan
 
 @api_view(["GET"])
-def download_pdf_report(request):
-    results = LATEST_RESULTS or []
-    buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=letter,
-                            rightMargin=30, leftMargin=30, topMargin=40, bottomMargin=40)
+def download_pdf_report(request, scan_id):
+    """
+    Generate PDF report for a given network scan (from DB).
+    """
+    try:
+        scan = NetworkScan.objects.get(id=scan_id)
+        rows = scan.results  # assuming results is JSONField with list of dicts
+    except NetworkScan.DoesNotExist:
+        rows = []
 
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter,
+        rightMargin=30,
+        leftMargin=30,
+        topMargin=40,
+        bottomMargin=40
+    )
     styles = getSampleStyleSheet()
     normal = styles["Normal"]
-    title_style = styles["Title"]
-    heading_style = styles["Heading2"]
-
     elements = []
 
-    # HEADER: logos + company
-    logo_left_path = "/Users/darshitayar/Desktop/VaptManagement /frontend/src/assets/OTlogo.jpg"
-    logo_right_path = "/Users/darshitayar/Desktop/VaptManagement /frontend/src/assets/HomeIcon.png"
-
+    # Optional logos
+    LOGO_LEFT_PATH = "/Users/darshitayar/Desktop/VaptManagement /frontend/src/assets/OTlogo.jpg"
+    LOGO_RIGHT_PATH = "/Users/darshitayar/Desktop/VaptManagement /frontend/src/assets/HomeIcon.png"
     try:
-        logo_left = Image(logo_left_path, width=55, height=55)
+        logo_left = Image(LOGO_LEFT_PATH, width=55, height=55)
+        logo_right = Image(LOGO_RIGHT_PATH, width=70, height=70)
     except Exception:
         logo_left = Paragraph("", normal)
-    try:
-        logo_right = Image(logo_right_path, width=70, height=70)
-    except Exception:
         logo_right = Paragraph("", normal)
 
-    header_table = Table([
-        [logo_left,
-         Paragraph("<b>Orange Technolab Pvt Ltd<br/>ISO 9001 & 27001 Certified Company</b>", styles["Heading3"]),
-         logo_right]
-    ], colWidths=[70, 360, 70])
-
-    header_table.setStyle(TableStyle([
-        ("ALIGN", (0,0), (0,0), "LEFT"),
-        ("ALIGN", (1,0), (1,0), "CENTER"),
-        ("ALIGN", (2,0), (2,0), "RIGHT"),
-        ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
-        ("LEFTPADDING", (1,0), (1,0), 10),
-        ("RIGHTPADDING", (1,0), (1,0), 10),
-        ("BOTTOMPADDING", (0,0), (-1,-1), 12)
-    ]))
+    # Header table
+    header_table = Table(
+        [[logo_left,
+          Paragraph("<b>Orange Technolab Pvt Ltd ISO 9001 & 27001 Certified Company<br/></b>", styles["Heading3"]),
+          logo_right]],
+        colWidths=[70, 360, 70]
+    )
+    header_table.setStyle(TableStyle([("VALIGN", (0,0), (-1,-1), "MIDDLE")]))
     elements.append(header_table)
-    elements.append(Spacer(1, 50))
-
-    # Title
-    elements.append(Paragraph("🖧 Network Scan Report", title_style))
+    elements.append(Spacer(1, 18))
+    elements.append(Paragraph(f"Network Scan Report: {scan_id}", styles["Title"]))
     elements.append(Spacer(1, 12))
 
-    if not results:
-        elements.append(Paragraph("No scan results available. Please run a scan first.", normal))
+    # Build results table
+    if not rows:
+        elements.append(Paragraph("✅ No scan results found for this scan.", normal))
     else:
-        # Table header
-        data = [["Host", "Port", "Status", "Service", "Vulnerable", "CVE ID", "Date"]]
-        for r in results:
+        data = [["Host", "Port", "Status", "Service", "Vulnerable", "CVE"]]
+        for r in rows:
             data.append([
-                r.get("host", "-"),
-                r.get("port", "-"),
-                r.get("status", "-"),
-                r.get("service", "-"),
-                "Yes" if r.get("vulnerable") else "No",
-                r.get("cve", "-"),
-                r.get("date", "-"),
+                Paragraph(str(r.get("host", "-")), normal),
+                Paragraph(str(r.get("port", "-")), normal),
+                Paragraph(str(r.get("status", "-")), normal),
+                Paragraph(str(r.get("service", "-")), normal),
+                Paragraph("Yes" if r.get("vulnerable") else "No", normal),
+                Paragraph(str(r.get("cve", "-")), normal),
             ])
-
-        col_widths = [80, 50, 60, 90, 60, 80, 80]
-        table = Table(data, colWidths=col_widths, repeatRows=1)
-        table.setStyle(TableStyle([
+        table = Table(data, colWidths=[100, 40, 60, 100, 60, 100], repeatRows=1)
+        style = TableStyle([
             ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#0d1b2a")),
             ("TEXTCOLOR", (0,0), (-1,0), colors.white),
-            ("ALIGN", (0,0), (-1,-1), "CENTER"),
-            ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
-            ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
-            ("FONTSIZE", (0,0), (-1,0), 10),
-            ("BOTTOMPADDING", (0,0), (-1,0), 6),
             ("GRID", (0,0), (-1,-1), 0.25, colors.grey),
-        ]))
+        ])
+        table.setStyle(style)
         elements.append(table)
 
-    # Footer + background
-    def add_page(canvas, doc):
+    # Footer
+    def footer(canvas, doc):
         canvas.saveState()
-        # Background
-        canvas.setFillColor(colors.HexColor("#f6f6f6"))
-        canvas.rect(0, 0, doc.pagesize[0], doc.pagesize[1], stroke=0, fill=1)
-        # Footer
-        footer_text = "www.orangetechnolab.com | +91 88660 68968 | sales@orangewebtech.com"
+        footer_text = "www.orangetechnolab.com"
         canvas.setFont("Helvetica", 9)
-        canvas.setFillColor(colors.black)
         canvas.drawCentredString(doc.pagesize[0]/2, 20, footer_text)
         canvas.restoreState()
 
-    doc.build(elements, onFirstPage=add_page, onLaterPages=add_page)
+    doc.build(elements, onFirstPage=footer, onLaterPages=footer)
     buffer.seek(0)
-    return FileResponse(buffer, as_attachment=True, filename="network_scan_report.pdf")
+    return FileResponse(buffer, as_attachment=True, filename=f"network_scan_report_{scan_id}.pdf")
+
+# ---- Session History ----
+@api_view(["GET"])
+def get_scan_history(request):
+    history = request.session.get("scan_history", []) or []
+    return Response({"history": history})
+
+
+# ---- Past scans from DB ----
+@api_view(["GET"])
+def past_network_scans(request):
+    scans = NetworkScan.objects.filter(status="finished").order_by('-created_at')
+    serializer = NetworkScanSerializer(scans, many=True)
+    return Response(serializer.data)

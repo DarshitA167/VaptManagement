@@ -415,3 +415,33 @@ VaptManagement/
    • requirements.txt
    • testfile.txt
 
+- [2025-10-17 17:30:22] Committing changes:
+   • backend/apiscanner/migrations/0002_apiscan_name_alter_apiscan_error_alter_apiscan_id_and_more.py
+   • backend/apiscanner/models.py
+   • backend/apiscanner/serializers.py
+   • backend/apiscanner/urls.py
+   • backend/apiscanner/views.py
+   • backend/db.sqlite3
+   • backend/domainscanner/migrations/0001_initial.py
+   • backend/domainscanner/migrations/0002_remove_domainscan_headers_domainscan_results_and_more.py
+   • backend/domainscanner/models.py
+   • backend/domainscanner/urls.py
+   • backend/domainscanner/views.py
+   • backend/networkscanner/migrations/0001_initial.py
+   • backend/networkscanner/migrations/0002_networkscan_url_alter_networkscan_ip_and_more.py
+   • backend/networkscanner/models.py
+   • backend/networkscanner/serializers.py
+   • backend/networkscanner/urls.py
+   • backend/networkscanner/views.py
+   • backend/sslscanner/migrations/0001_initial.py
+   • backend/sslscanner/migrations/0002_sslscan_result_json_alter_sslscan_pdf_report.py
+   • backend/sslscanner/models.py
+   • backend/sslscanner/serializers.py
+   • backend/sslscanner/urls.py
+   • backend/sslscanner/views.py
+   • backend/webappscanner/migrations/0003_alter_webappscanresult_alert_and_more.py
+   • backend/webappscanner/migrations/0004_alter_webappscanresult_scan_id_and_more.py
+   • backend/webappscanner/models.py
+   • backend/webappscanner/urls.py
+   • backend/webappscanner/views.py
+

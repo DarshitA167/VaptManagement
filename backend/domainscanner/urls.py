@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import scan_domain
+from . import views
 
 urlpatterns = [
-    path("scan/", scan_domain, name="scan_domain"),
+    path("scan/", views.scan_domain, name="scan_domain"),
+    path("past/", views.past_scans, name="past_scans"),
 ]
