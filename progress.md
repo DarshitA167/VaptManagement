@@ -445,3 +445,10 @@ VaptManagement/
    • backend/webappscanner/urls.py
    • backend/webappscanner/views.py
 
+- [2025-10-17 17:36:06] Committing changes:
+   • (no files staged)
+
+- [2025-10-17 17:36:39] Committing changes:
+   • .gitignore
+   • progress.md
+
